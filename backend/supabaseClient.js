@@ -1,8 +1,17 @@
-const { createClient } = require('@supabase/supabase-js');
+// Supabase client
+import dotenv from "dotenv";
+dotenv.config();
 
-const supabase = createClient(
+import { createClient } from "@supabase/supabase-js";
+
+export const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-module.exports = supabase;
+export const supabaseAuth = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+export default supabaseAdmin; // Default export for admin operations
