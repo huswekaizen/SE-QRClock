@@ -1,0 +1,20 @@
+{ Today's Task on the Go}
+
+    - Create create Employee / Add employee for admin feature
+    - learn and add logout for both employee and admin account
+
+  async function handleUserLogin(e) {
+    e.preventDefault();
+    const res = await fetch("http://localhost:5000/api/user/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (data.role === "admin") navigate("/admin");
+      else navigate("/employee");
+    } else {
+      setError(data.message);
+    }
+  }

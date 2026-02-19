@@ -49,11 +49,26 @@ export const login = async (req, res) => {
       message: "Login successful",
       user: sessionData.user,
       role: profile.role,
-      access_token: sessionData.session?.access_token,
+      access_token: sessionData.access_token || sessionData.session?.access_token,
     });
 
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const { access_token } = req.body;
+    if (!access_token) return res.status(400).json({ error: "No token provided" });
+
+    const { error } = await supabaseAuth.auth.signOut({ access_token });
+    if (error) throw error;
+
+    res.json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Logout failed" });
   }
 };

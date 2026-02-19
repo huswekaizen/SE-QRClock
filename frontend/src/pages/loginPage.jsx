@@ -1,28 +1,54 @@
 // LoginPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabaseAuth } from "../utils/supabaseClient.js";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  
   const navigate = useNavigate();
 
-  async function handleAdminLogin(e) {
+  // LoginPage.jsx
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabaseAuth.auth.getSession();
+      if (session) navigate("/admin", { replace: true }); // already logged in
+    };
+    checkSession();
+  }, []);
+
+
+  async function handleUserLogin(e) {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/user/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+      email,
+      password,
     });
-    const data = await res.json();
-    if (res.ok) {
-      if (data.role === "admin") navigate("/admin");
-      else navigate("/employee");
-    } else {
-      setError(data.message);
+
+    if (error) {
+      setError(error.message);
+      return;
     }
+
+    // fetch user role from table
+    const { data: profile, error: profileError } = await supabaseAuth
+      .from("users")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (profileError) {
+      console.error(profileError);
+      setError("Failed to fetch user role");
+      return;
+    }
+
+    if (profile.role === "admin") navigate("/admin");
+    else navigate("/employee");
   }
+
 
 
   return (
@@ -31,7 +57,7 @@ export default function LoginPage() {
         <h1 className="text-3xl font-extrabold mb-8 text-center text-gray-900 dark:text-white">
           QRClock Login
         </h1>
-        <form onSubmit={handleAdminLogin} className="space-y-6">
+        <form onSubmit={handleUserLogin} className="space-y-6">
           <div>
 
             <input
