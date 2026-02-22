@@ -33,8 +33,11 @@ export default function AdminLayout() {
       >
         <h1 className="text-xl font-bold mb-6">Admin Panel</h1>
         <nav className="flex flex-col space-y-4">
-            <Link to="/admin" className="hover:text-white">Home</Link>
+            <Link to="/admin" className="hover:text-white">Dashboard</Link>
             <Link to="/admin/employees" className="hover:text-white">Employees</Link>
+            <Link to="/admin/attendance" className="hover:text-white">Attendance</Link>
+            <Link to="/admin/generate-qr" className="hover:text-white">Generate QR</Link>
+            <Link to="/admin/reports" className="hover:text-white">Reports</Link>
             <Link to="/admin/settings" className="hover:text-white">Settings</Link>
             <button onClick={handleLogout} className="text-left hover:text-white">Logout</button>
         </nav>

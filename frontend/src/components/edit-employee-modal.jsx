@@ -1,27 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function CreateEmployee({ isOpen, onClose, onSubmit }) {
+export default function EditEmployeeModal({ isOpen, onClose, onSubmit, employee }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  if (!isOpen) return null; // modal hidden
+  // Pre-fill modal inputs when employee prop changes
+  useEffect(() => {
+    if (employee) {
+      const [first, ...rest] = employee.full_name.split(" ");
+      setFirstName(first);
+      setLastName(rest.join(" "));
+      setEmail(employee.email || ""); // might be empty if you store email separately
+      setPassword(""); // always empty for security
+      setError("");
+    }
+  }, [employee]);
 
-  const handleSubmit = (e) => {
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({ firstName, lastName, email, password });
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setPassword("");
-    onClose();
+    setIsLoading(true);
+
+    const success = await onSubmit(
+      { userId: employee.id, firstName, lastName, email, password },
+      setError
+    );
+
+    setIsLoading(false);
+
+    if (success) {
+      setPassword(""); // clear password only
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Create Employee</h2>
+        <h2 className="text-xl font-semibold mb-4">Edit Employee</h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -49,12 +69,13 @@ export default function CreateEmployee({ isOpen, onClose, onSubmit }) {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Password (leave blank to keep current)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
           />
+
+          {error && <p className="text-red-500">{error}</p>}
 
           <div className="flex justify-end gap-3 mt-2">
             <button
@@ -66,9 +87,10 @@ export default function CreateEmployee({ isOpen, onClose, onSubmit }) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition"
+              disabled={isLoading}
+              className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white transition"
             >
-              Create
+              {isLoading ? "Updating..." : "Update"}
             </button>
           </div>
         </form>

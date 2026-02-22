@@ -1,0 +1,4 @@
+Today's Task on the Go
+
+  - Create Actions For Employees Table
+  - Make it functional and working with Database and endpoints
