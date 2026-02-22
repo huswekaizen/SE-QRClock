@@ -1,15 +1,21 @@
-const express = require("express");
-const cors = require("cors");
+import dotenv from "dotenv";
+dotenv.config();
+// app.js / server.js
+import express from "express";
+import cors from "cors";
+import userRoute from "./routes/userRoute.js";
+import employeeRoute from "./routes/employeeRoute.js";
 
 const app = express();
-
-// middlewares
 app.use(cors());
 app.use(express.json());
 
-// routes
+app.use("/api", userRoute);
+app.use("/api", employeeRoute);
+
+
 app.get("/", (req, res) => {
   res.send("QRClock API is running");
 });
 
-module.exports = app; // export the app
+export default app;
