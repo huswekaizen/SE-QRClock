@@ -8,20 +8,59 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   
+  console.log("local device_id:", localStorage.getItem("device_id"));
+
   const navigate = useNavigate();
 
-  // LoginPage.jsx
+  // top of your file or inside useEffect/checkSession
+  function getDeviceId() {
+    let id = localStorage.getItem("device_id");
+    if (!id) {
+      id = crypto.randomUUID(); // generate a new UUID for this device
+      localStorage.setItem("device_id", id);
+    }
+    return id;
+  }
+
+  const [checkingSession, setCheckingSession] = useState(true);
+
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabaseAuth.auth.getSession();
-      if (session) navigate("/admin", { replace: true }); // already logged in
+      if (!session) {
+        setCheckingSession(false);
+        return;
+      }
+
+      const { data: profile } = await supabaseAuth
+        .from("users")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      if (!profile) {
+        setCheckingSession(false);
+        return;
+      }
+
+      if (profile.role === "admin") {
+        setCheckingSession(false);
+        navigate("/admin", { replace: true });
+        return;
+      }
+
+      // employees: show login
+      setCheckingSession(false);
     };
+
     checkSession();
   }, []);
 
+  if (checkingSession) return <p>Loading...</p>; // loader instead of null
 
   async function handleUserLogin(e) {
     e.preventDefault();
+
     const { data, error } = await supabaseAuth.auth.signInWithPassword({
       email,
       password,
@@ -31,6 +70,8 @@ export default function LoginPage() {
       setError(error.message);
       return;
     }
+
+    const userId = data.user.id;
 
     // fetch user role from table
     const { data: profile, error: profileError } = await supabaseAuth
@@ -45,8 +86,37 @@ export default function LoginPage() {
       return;
     }
 
-    if (profile.role === "admin") navigate("/admin");
-    else navigate("/employee");
+    if (profile.role === "admin") {
+      navigate("/admin"); // admins skip device check
+      return;
+    }
+
+    // Only for employees:
+    if (profile.role === "employee") {
+      const deviceId = getDeviceId();
+      let deviceData = null;
+
+      try {
+        const { data, error } = await supabaseAuth
+          .from("registered_devices")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("device_identifier", deviceId)
+          .maybeSingle();
+
+        if (error) console.error(error);
+        else deviceData = data;
+      } catch (err) {
+        console.log("Device not found or error:", err);
+      }
+      
+      console.log("Device data from Supabase:", deviceData);
+      console.log("Local device_id:", deviceId);
+
+      if (deviceData) navigate("/employee");
+      else navigate("/employee-device-registration");
+    }
+
   }
 
 

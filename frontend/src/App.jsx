@@ -6,7 +6,8 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LoginPage from './pages/loginPage'
-import AdminPage from './pages/admin-page'
+import EmployeeDeviceRegistrationPage from './pages/employee-device-registration-page'
+import AdminPageHome from './pages/admin-page-home'
 import AdminPageEmployees from './pages/admin-page-employees';
 import EmployeePage from './pages/employee-page'
 import AdminLayout from './layouts/admin-layout';
@@ -20,9 +21,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/employee-device-registration" element={<EmployeeDeviceRegistrationPage />} />
 
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminPage />} />
+          <Route index element={<AdminPageHome />} />
           <Route path="employees" element={<AdminPageEmployees />} />
           <Route path="attendance" element={<AdminPageAttendance />} />
           <Route path="generate-qr" element={<AdminPageGenerateQR />} />
