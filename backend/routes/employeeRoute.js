@@ -1,14 +1,12 @@
 // adminRoute.js
 import express from "express";
 import { createEmployee, editEmployee, deleteEmployee,
-         employeeList, changeEmployeePassword, registerDevice
+         employeeList
        } from "../controllers/employeeController.js";
 
 const router = express.Router();
 
 router.post("/create-employee", createEmployee);
-router.post("/change-password", changeEmployeePassword);
-router.post("/register-device", registerDevice);
 
 router.put("/edit-employee/:id", editEmployee);
 

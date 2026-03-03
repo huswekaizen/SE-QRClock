@@ -153,13 +153,14 @@ export default function AdminPageEmployees() {
                                     <th className="py-2">Full Name</th>
                                     <th className="py-2">Email</th>
                                     <th className="py-2">Role</th>
+                                    <th className="py-2">Device Status</th>
                                     <th className="py-2 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredEmployees.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="py-4 text-center text-gray-400">
+                                        <td colSpan="5" className="py-4 text-center text-gray-400">
                                             No employees found
                                         </td>
                                     </tr>
@@ -169,7 +170,17 @@ export default function AdminPageEmployees() {
                                             <td className="py-2">{emp.full_name}</td>
                                             <td className="py-2">{emp.email}</td>
                                             <td className="py-2 capitalize">{emp.role}</td>
-
+                                            <td className="py-2">
+                                                {emp.device_registered ? (
+                                                    <span className="text-green-600 font-medium">
+                                                        Device Registered
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-red-500 font-medium">
+                                                        Not Registered
+                                                    </span>
+                                                )}
+                                            </td>
                                             <td className="py-2 text-right space-x-2 flex justify-end">
                                                 <PencilIcon
                                                     onClick={() => {

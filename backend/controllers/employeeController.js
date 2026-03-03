@@ -135,9 +135,8 @@ export const deleteEmployee = async (req, res) => {
 export const employeeList = async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
-      .from("users")
-      .select("id, email, full_name, role")
-      .eq("role", "employee")
+      .from("employee_with_status")
+      .select("*")
       .order("full_name", { ascending: true });
 
     if (error) {
@@ -148,61 +147,5 @@ export const employeeList = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch employees" });
-  }
-};
-
-export const changeEmployeePassword = async (req, res) => {
-  try {
-    const { userId, newPassword } = req.body;
-
-    if (!userId || !newPassword)
-      return res.status(400).json({ error: "Missing parameters" });
-
-    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
-      userId,
-      { password: newPassword }
-    );
-
-    if (error) return res.status(400).json({ error: error.message });
-
-    res.json({ message: "Password updated successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to update password" });
-  }
-};
-
-export const registerDevice = async (req, res) => {
-  try {
-    const { userId, deviceIdentifier, deviceName } = req.body;
-
-    if (!userId || !deviceIdentifier)
-      return res.status(400).json({ error: "Missing parameters" });
-
-    // Make sure they don’t already have a device
-    const { data: existingDevice } = await supabaseAdmin
-      .from("registered_devices")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-
-    if (existingDevice)
-      return res.status(400).json({ error: "Device already registered" });
-
-    const { error } = await supabaseAdmin
-      .from("registered_devices")
-      .insert({
-        user_id: userId,
-        device_identifier: deviceIdentifier,
-        device_name: deviceName || null,
-        is_active: true,
-      });
-
-    if (error) return res.status(400).json({ error: error.message });
-
-    res.json({ message: "Device registered successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to register device" });
   }
 };
