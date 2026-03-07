@@ -149,3 +149,28 @@ export const employeeList = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch employees" });
   }
 };
+
+export const adminDashboard = async (req, res) => {
+  try {
+
+    const { count: totalEmployees, error } = await supabaseAdmin
+      .from("users")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "employee");
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.json({
+      totalEmployees,
+      todaysAttendance: 0,
+      qrGenerated: 0,
+      reportsCreated: 0
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch dashboard data" });
+  }
+};

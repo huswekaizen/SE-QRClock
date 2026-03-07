@@ -1,10 +1,6 @@
 Today's Task on the Go
 
-  - work on employee side now (Verifications, Steps, Change Password first before login) etc.
-  - employee verification account has error work on it and fix
-  - navigations issues (if there are still bugs).
-
-  - Bug in registration page like the change password still works even if the registration failed so the 
-    account password changes without even registering it
   - Also, work on only navigating to registration if account is unregistered. If its registered but difference device, 
     I would still continue to navigate in employees page.
+
+  - Work on QR Generation. Table connections for it, QR Generator and Other essentials.

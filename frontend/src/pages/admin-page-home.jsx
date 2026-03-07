@@ -15,6 +15,24 @@ import {
 
 
 export default function AdminPageHome() {
+
+  const [totalEmployees, setTotalEmployees] = useState(0);
+
+  async function fetchTotalEmployees() {
+    try {
+      const res = await fetch("http://localhost:5000/api/admin-dashboard");
+      const data = await res.json();
+      setTotalEmployees(data.totalEmployees);
+    } catch (error) {
+      console.error("Error fetching total employees:", error);
+    }
+  }
+
+  useEffect(() => {
+        fetchTotalEmployees();
+    }, []);
+
+
   return (
     <div className="space-y-8 p-4">
       {/* Page Title */}
@@ -31,7 +49,7 @@ export default function AdminPageHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatusCard
           title="Total Employees"
-          value={0}
+          value={totalEmployees}
           Icon={UsersIcon}
           iconColor="text-blue-500"
         />
