@@ -133,7 +133,7 @@ export default function AdminPageEmployees() {
             <div className="space-y-8 p-4">
                 <div className="flex flex-col mb-6"> 
                     <h1 className="text-3xl font-bold mb-[4px]">Employees</h1>
-                    <p className="text-gray-400">Check / Manage Employees</p>
+                    <p className="text-gray-500">Check / Manage Employees</p>
                 </div>
                 <div >
                     <div className="flex flex-row-reverse items-center justify-between gap-44 mb-[34px]">
@@ -213,6 +213,9 @@ export default function AdminPageEmployees() {
                     </div>
                 </div>
 
+
+            </div>
+            
                 <CreateEmployeeModal
                     isOpen={isCreateModalOpen}
                     onClose={() => setCreateModal(false)}
@@ -235,8 +238,6 @@ export default function AdminPageEmployees() {
                     onConfirm={handleDeleteEmployee}
                     employee={selectedEmployee}
                 />
-            </div>
-
         </>
     );
 }

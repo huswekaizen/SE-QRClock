@@ -26,7 +26,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed m-0 inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4">Create Employee</h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -63,10 +63,8 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSubmit }) {
             required
           />
 
-          {error && <p className="text-red-500">{error}</p>}<p className="text-sm text-gray-500">
+          {error && <p className="text-red-500">{error}</p>}
             
-          </p>
-
           <div className="flex justify-end gap-3 mt-2">
             <button
               type="button"

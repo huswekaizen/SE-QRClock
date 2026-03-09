@@ -37,10 +37,10 @@ export default function AdminPageHome() {
     <div className="space-y-8 p-4">
       {/* Page Title */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-800">
+        <h1 className="text-3xl font-bold mb-[4px]">
           Dashboard
         </h1>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500">
           Summary of system activity and statistics
         </p>
       </div>

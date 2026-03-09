@@ -3,4 +3,6 @@ Today's Task on the Go
   - Also, work on only navigating to registration if account is unregistered. If its registered but difference device, 
     I would still continue to navigate in employees page.
 
+  - Work on Qr clock out's modal
+  
   - Work on QR Generation. Table connections for it, QR Generator and Other essentials.
