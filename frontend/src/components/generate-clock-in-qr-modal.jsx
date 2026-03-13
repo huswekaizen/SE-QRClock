@@ -42,7 +42,7 @@ export default function GenerateClockInQrModal({ isOpen, onClose, onGenerate, ty
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            Generate {type === "time_in" ? "Clock-In" : "Clock-Out"} QR
+            Generate {type === "clock_in" ? "Clock-In" : "Clock-Out"} QR
           </h2>
           <button onClick={onClose}>
             <XMarkIcon className="w-5 h-5 text-gray-600" />

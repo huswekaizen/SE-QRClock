@@ -3,6 +3,32 @@ Today's Task on the Go
   - Also, work on only navigating to registration if account is unregistered. If its registered but difference device, 
     I would still continue to navigate in employees page.
 
-  - Work on Qr clock out's modal
   
+  - Qr Generation can be cleared and the generated qr code/image can be deleted to generate new one 
+  and the row in table should be removed too when the first qr generated is deleted/cleared
+
   - Work on QR Generation. Table connections for it, QR Generator and Other essentials.
+      - Connect now the qr generation in database that would look like this 
+
+
+
+
+
+
+
+| id | type      | date       | start_time | qr_token           |
+| -- | --------- | ---------- | ---------- | ------------------ |
+| 1  | clock_in  | 2026-03-09 | 08:00      | clockin_0309_ab12  |
+| 2  | clock_out | 2026-03-09 | 17:00      | clockout_0309_ab34 |
+| 3  | clock_in  | 2026-03-10 | 08:00      | clockin_0310_cd56  |
+| 4  | clock_out | 2026-03-10 | 17:00      | clockout_0310_cd78 |
+
+id          → uuid (auto)
+type        → clock_in / clock_out
+date        → the date the QR is for
+start_time  → when it becomes valid
+expires_at  → optional
+qr_token    → string encoded in the QR image
+created_at  → timestamp now()
+late_after  → optional
+early_leave_before -> optional

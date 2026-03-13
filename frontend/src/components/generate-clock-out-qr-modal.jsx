@@ -40,7 +40,7 @@ export default function GenerateClockOutQrModal({ isOpen, onClose, onGenerate, t
             type="date"
             className="w-full border rounded-lg px-3 py-2"
             value={shiftDate || ""}
-            onChange={(e) => setDate(e.target.value)}
+            readOnly
           />
         </div>
 

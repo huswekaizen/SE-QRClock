@@ -15,9 +15,10 @@ export const sendWelcomeEmail = async (email, password) => {
       to: email,
       subject: "Your QRClock Account",
       html: `
-        <h2>Welcome to QRClock</h2>
-        <p>Your temporary password is: <b>${password}</b></p>
-        <p>Changing to your new password is required before you can log in for the first time.</p>
+        <h1>Welcome to QRClock</h1>
+        <h3>Your temporary password is: <b>${password}</b></h3>
+        <p>Changing to your new password is required along with 
+        completing your device registration before you can log in for the first time.</p>
       `,
     });
 
