@@ -4,6 +4,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 export default function GenerateClockOutQrModal({ isOpen, onClose, onGenerate, type, shiftDate }) {
   const [endTime, setEndTime] = useState("");
   const [earlyLeaveBefore, setEarlyLeaveBefore] = useState("");
+  const [expireAfter, setExpireAfter] = useState("");
 
   if (!isOpen) return null;
 
@@ -17,7 +18,8 @@ export default function GenerateClockOutQrModal({ isOpen, onClose, onGenerate, t
             type,
             date: shiftDate,
             endTime,
-            earlyLeaveBefore
+            earlyLeaveBefore,
+            expireAfter
         });
     };
 
@@ -63,6 +65,18 @@ export default function GenerateClockOutQrModal({ isOpen, onClose, onGenerate, t
             className="w-full border rounded-lg px-3 py-2"
             value={earlyLeaveBefore}
             onChange={(e) => setEarlyLeaveBefore(e.target.value)}
+          />
+        </div>
+
+
+        {/* Expire After */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Expire After</label>
+          <input
+            type="time"
+            className="w-full border rounded-lg px-3 py-2"
+            value={expireAfter}
+            onChange={(e) => setExpireAfter(e.target.value)}
           />
         </div>
 

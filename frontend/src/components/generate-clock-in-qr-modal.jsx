@@ -5,6 +5,7 @@ export default function GenerateClockInQrModal({ isOpen, onClose, onGenerate, ty
     const [date, setDate] = useState("");
     const [startTime, setStartTime] = useState("");
     const [lateUntil, setLateUntil] = useState("");
+    const [expireAfter, setExpireAfter] = useState("");
 
     if (!isOpen) return null;
 
@@ -32,6 +33,7 @@ export default function GenerateClockInQrModal({ isOpen, onClose, onGenerate, ty
             date,
             startTime,
             lateUntil,
+            expireAfter
         });
     };
 
@@ -79,6 +81,16 @@ export default function GenerateClockInQrModal({ isOpen, onClose, onGenerate, ty
             className="w-full border rounded-lg px-3 py-2"
             value={lateUntil}
             onChange={(e) => setLateUntil(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Expire After</label>
+          <input
+            type="time"
+            className="w-full border rounded-lg px-3 py-2"
+            value={expireAfter}
+            onChange={(e) => setExpireAfter(e.target.value)}
           />
         </div>
 

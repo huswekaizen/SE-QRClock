@@ -21,19 +21,27 @@ export default function AdminPageGenerateQR() {
   useEffect(() => {
     const fetchLastQr = async () => {
 
-      // Fetch latest clock-in
+      const now = new Date();
+      const today = now.toISOString().split("T")[0];
+      const isoNow = now.toISOString();
+
+      // Latest valid clock-in
       const { data: clockInData, error: clockInError } = await supabase
         .from("qr_codes")
         .select("*")
         .eq("type", "clock_in")
+        .eq("date", today)
+        .gt("expires_at", isoNow)
         .order("created_at", { ascending: false })
         .limit(1);
 
-      // Fetch latest clock-out
+      // Latest valid clock-out
       const { data: clockOutData, error: clockOutError } = await supabase
         .from("qr_codes")
         .select("*")
         .eq("type", "clock_out")
+        .eq("date", today)
+        .gt("expires_at", isoNow)
         .order("created_at", { ascending: false })
         .limit(1);
 
@@ -64,12 +72,18 @@ export default function AdminPageGenerateQR() {
 
     console.log("DATA FROM MODAL:", data);
 
+    const expiresAt = new Date(data.date);
+    const [hours, minutes] = data.expireAfter.split(":");
+
+    expiresAt.setHours(hours, minutes, 0, 0);
+
     const insertData = {
-      type: data.type === "clock_in" ? "clock_in" : "clock_out",
+      type: data.type,
       date: data.date,
       start_time: data.startTime || data.endTime,
       late_after: data.lateUntil ?? null,
       early_leave_before: data.earlyLeaveBefore ?? null,
+      expires_at: expiresAt.toISOString(),
       qr_token: token
     };
 
