@@ -8,20 +8,71 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   
+  console.log("local device_id:", localStorage.getItem("device_id"));
+
   const navigate = useNavigate();
 
-  // LoginPage.jsx
+  // top of your file or inside useEffect/checkSession
+  function getDeviceId() {
+    let id = localStorage.getItem("device_id");
+
+    if (!id) {
+      if (crypto.randomUUID) {
+        id = crypto.randomUUID();
+      } else {
+        // fallback UUID generator
+        id = "xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+          const r = (Math.random() * 16) | 0;
+          const v = c === "x" ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+      }
+
+      localStorage.setItem("device_id", id);
+    }
+
+    return id;
+  }
+
+  const [checkingSession, setCheckingSession] = useState(true);
+
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabaseAuth.auth.getSession();
-      if (session) navigate("/admin", { replace: true }); // already logged in
+      if (!session) {
+        setCheckingSession(false);
+        return;
+      }
+
+      const { data: profile } = await supabaseAuth
+        .from("users")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      if (!profile) {
+        setCheckingSession(false);
+        return;
+      }
+
+      if (profile.role === "admin") {
+        setCheckingSession(false);
+        navigate("/admin", { replace: true });
+        return;
+      }
+
+      // employees: show login
+      setCheckingSession(false);
     };
+
     checkSession();
   }, []);
 
+  if (checkingSession) return <p>Loading...</p>; // loader instead of null
 
   async function handleUserLogin(e) {
     e.preventDefault();
+
     const { data, error } = await supabaseAuth.auth.signInWithPassword({
       email,
       password,
@@ -32,11 +83,13 @@ export default function LoginPage() {
       return;
     }
 
-    // fetch user role from table
+    const userId = data.user.id;
+
+    // get user role
     const { data: profile, error: profileError } = await supabaseAuth
       .from("users")
       .select("role")
-      .eq("id", data.user.id)
+      .eq("id", userId)
       .single();
 
     if (profileError) {
@@ -45,8 +98,45 @@ export default function LoginPage() {
       return;
     }
 
-    if (profile.role === "admin") navigate("/admin");
-    else navigate("/employee");
+    // admins skip device check
+    if (profile.role === "admin") {
+      navigate("/admin");
+      return;
+    }
+
+    if (profile.role === "employee") {
+      const deviceId = getDeviceId();
+
+      const { data: registeredDevice, error: deviceError } = await supabaseAuth
+        .from("registered_devices")
+        .select("device_identifier")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (deviceError) {
+        console.error(deviceError);
+        setError("Device check failed");
+        return;
+      }
+
+      console.log("Registered device:", registeredDevice);
+      console.log("Current device:", deviceId);
+
+      // No device registered yet
+      if (!registeredDevice) {
+        navigate("/employee-device-registration");
+        return;
+      }
+
+      // Same device
+      if (registeredDevice.device_identifier === deviceId) {
+        navigate("/employee");
+        return;
+      }
+
+      // Different device
+      navigate("/employee-device-already-registered");
+    }
   }
 
 
