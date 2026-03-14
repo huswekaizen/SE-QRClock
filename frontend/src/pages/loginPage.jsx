@@ -15,10 +15,22 @@ export default function LoginPage() {
   // top of your file or inside useEffect/checkSession
   function getDeviceId() {
     let id = localStorage.getItem("device_id");
+
     if (!id) {
-      id = crypto.randomUUID(); // generate a new UUID for this device
+      if (crypto.randomUUID) {
+        id = crypto.randomUUID();
+      } else {
+        // fallback UUID generator
+        id = "xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+          const r = (Math.random() * 16) | 0;
+          const v = c === "x" ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+      }
+
       localStorage.setItem("device_id", id);
     }
+
     return id;
   }
 
@@ -73,11 +85,11 @@ export default function LoginPage() {
 
     const userId = data.user.id;
 
-    // fetch user role from table
+    // get user role
     const { data: profile, error: profileError } = await supabaseAuth
       .from("users")
       .select("role")
-      .eq("id", data.user.id)
+      .eq("id", userId)
       .single();
 
     if (profileError) {
@@ -86,37 +98,45 @@ export default function LoginPage() {
       return;
     }
 
+    // admins skip device check
     if (profile.role === "admin") {
-      navigate("/admin"); // admins skip device check
+      navigate("/admin");
       return;
     }
 
-    // Only for employees:
     if (profile.role === "employee") {
       const deviceId = getDeviceId();
-      let deviceData = null;
 
-      try {
-        const { data, error } = await supabaseAuth
-          .from("registered_devices")
-          .select("id")
-          .eq("user_id", userId)
-          .eq("device_identifier", deviceId)
-          .maybeSingle();
+      const { data: registeredDevice, error: deviceError } = await supabaseAuth
+        .from("registered_devices")
+        .select("device_identifier")
+        .eq("user_id", userId)
+        .maybeSingle();
 
-        if (error) console.error(error);
-        else deviceData = data;
-      } catch (err) {
-        console.log("Device not found or error:", err);
+      if (deviceError) {
+        console.error(deviceError);
+        setError("Device check failed");
+        return;
       }
-      
-      console.log("Device data from Supabase:", deviceData);
-      console.log("Local device_id:", deviceId);
 
-      if (deviceData) navigate("/employee");
-      else navigate("/employee-device-registration");
+      console.log("Registered device:", registeredDevice);
+      console.log("Current device:", deviceId);
+
+      // No device registered yet
+      if (!registeredDevice) {
+        navigate("/employee-device-registration");
+        return;
+      }
+
+      // Same device
+      if (registeredDevice.device_identifier === deviceId) {
+        navigate("/employee");
+        return;
+      }
+
+      // Different device
+      navigate("/employee-device-already-registered");
     }
-
   }
 
 
